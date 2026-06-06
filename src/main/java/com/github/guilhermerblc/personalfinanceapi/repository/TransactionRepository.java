@@ -9,11 +9,11 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TransactionRepository extends JpaRepository<Transaction, Integer> {
+public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
-    List<Transaction> findByAccountId(Integer accountId);
+    List<Transaction> findByAccountId(Long accountId);
 
     @Query("SELECT t FROM Transaction t WHERE t.account.user.id = :userId ORDER BY t.date DESC")
-    List<Transaction> findAllByUserId(@Param("userId") Integer userId);
-    
+    List<Transaction> findAllByUserId(@Param("userId") Long userId);
+
 }
