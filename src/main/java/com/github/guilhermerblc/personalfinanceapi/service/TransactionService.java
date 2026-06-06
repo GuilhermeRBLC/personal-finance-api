@@ -3,6 +3,8 @@ package com.github.guilhermerblc.personalfinanceapi.service;
 import com.github.guilhermerblc.personalfinanceapi.domain.Account;
 import com.github.guilhermerblc.personalfinanceapi.domain.Transaction;
 import com.github.guilhermerblc.personalfinanceapi.domain.enums.TransactionType;
+import com.github.guilhermerblc.personalfinanceapi.dto.TransactionRequestDTO;
+import com.github.guilhermerblc.personalfinanceapi.dto.TransactionResponseDTO;
 import com.github.guilhermerblc.personalfinanceapi.repository.AccountRepository;
 import com.github.guilhermerblc.personalfinanceapi.repository.TransactionRepository;
 import org.springframework.stereotype.Service;
@@ -23,9 +25,19 @@ public class TransactionService {
     }
 
     @Transactional
-    public Transaction createTransaction(Transaction transaction, Long accountId) {
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Account not found with id: " + accountId));
+    public TransactionResponseDTO createTransaction(TransactionRequestDTO requestDTO) {
+
+        Account account = accountRepository.findById(requestDTO.getAccountId())
+                .orElseThrow(() -> new RuntimeException("Account not found with id: " + requestDTO.getAccountId()));
+
+        Transaction transaction = Transaction.builder()
+                .description(requestDTO.getDescription())
+                .amount(requestDTO.getAmount())
+                .date(requestDTO.getDate())
+                .type(requestDTO.getType())
+                .category(requestDTO.getCategory())
+                .account(account)
+                .build();
 
         BigDecimal amount = transaction.getAmount();
         if (transaction.getType() == TransactionType.INCOME) {
@@ -34,14 +46,33 @@ public class TransactionService {
             account.setBalance(account.getBalance().subtract(amount));
         }
 
-        transaction.setAccount(account);
+        Transaction savedTransaction = transactionRepository.save(transaction);
 
-        return transactionRepository.save(transaction);
+        return TransactionResponseDTO.builder()
+                .id(savedTransaction.getId())
+                .description(savedTransaction.getDescription())
+                .amount(savedTransaction.getAmount())
+                .date(savedTransaction.getDate())
+                .type(savedTransaction.getType())
+                .category(savedTransaction.getCategory())
+                .accountId(account.getId())
+                .build();
     }
 
     @Transactional(readOnly = true)
-    public List<Transaction> findTransactionsByUserId(Long userId) {
-        return transactionRepository.findAllByUserId(userId);
+    public List<TransactionResponseDTO> findTransactionsByUserId(Long userId) {
+        return transactionRepository.findAllByUserId(userId)
+                .stream()
+                .map(transaction -> TransactionResponseDTO.builder()
+                        .id(transaction.getId())
+                        .description(transaction.getDescription())
+                        .amount(transaction.getAmount())
+                        .date(transaction.getDate())
+                        .type(transaction.getType())
+                        .category(transaction.getCategory())
+                        .accountId(transaction.getAccount().getId())
+                        .build())
+                .toList();
     }
 
 }
