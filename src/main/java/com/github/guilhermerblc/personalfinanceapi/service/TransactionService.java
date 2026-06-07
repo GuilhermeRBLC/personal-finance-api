@@ -7,6 +7,7 @@ import com.github.guilhermerblc.personalfinanceapi.dto.TransactionRequestDTO;
 import com.github.guilhermerblc.personalfinanceapi.dto.TransactionResponseDTO;
 import com.github.guilhermerblc.personalfinanceapi.repository.AccountRepository;
 import com.github.guilhermerblc.personalfinanceapi.repository.TransactionRepository;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,4 +76,43 @@ public class TransactionService {
                 .toList();
     }
 
+    @Transactional
+    public boolean deleteTransaction(Long id) {
+        transactionRepository.deleteById(id);
+        return true;
+    }
+
+    public TransactionResponseDTO updateTransaction(Long transactionId, TransactionRequestDTO requestDTO) {
+        Transaction transaction = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("Transaction not found with id: " + transactionId));
+
+        Account account = accountRepository.findById(requestDTO.getAccountId())
+                .orElseThrow(() -> new RuntimeException("Account not found with id: " + requestDTO.getAccountId()));
+
+        transaction.setDescription(requestDTO.getDescription());
+        transaction.setAmount(requestDTO.getAmount());
+        transaction.setDate(requestDTO.getDate());
+        transaction.setType(requestDTO.getType());
+        transaction.setCategory(requestDTO.getCategory());
+        transaction.setAccount(account);
+
+        BigDecimal amount = requestDTO.getAmount();
+        if (transaction.getType() == TransactionType.INCOME) {
+            account.setBalance(account.getBalance().add(amount));
+        } else if (transaction.getType() == TransactionType.EXPENSE) {
+            account.setBalance(account.getBalance().subtract(amount));
+        }
+
+        Transaction savedTransaction = transactionRepository.save(transaction);
+
+        return TransactionResponseDTO.builder()
+                .id(savedTransaction.getId())
+                .description(savedTransaction.getDescription())
+                .amount(savedTransaction.getAmount())
+                .date(savedTransaction.getDate())
+                .type(savedTransaction.getType())
+                .category(savedTransaction.getCategory())
+                .accountId(account.getId())
+                .build();
+    }
 }

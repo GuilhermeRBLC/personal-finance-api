@@ -32,4 +32,16 @@ public class AccountController {
         return ResponseEntity.ok(transactions);
     }
 
+    @PutMapping("/{accountId}")
+    public ResponseEntity<AccountResponseDTO> update(@PathVariable Long accountId, @Valid @RequestBody AccountRequestDTO requestDTO) {
+        AccountResponseDTO responseDTO = accountService.updateAccount(accountId, requestDTO);
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    @DeleteMapping("/{accountId}")
+    public ResponseEntity<Boolean> delete(@PathVariable Long accountId) {
+        accountService.deleteAccount(accountId);
+        return ResponseEntity.noContent().build();
+    }
+
 }

@@ -6,6 +6,7 @@ import com.github.guilhermerblc.personalfinanceapi.dto.AccountRequestDTO;
 import com.github.guilhermerblc.personalfinanceapi.dto.AccountResponseDTO;
 import com.github.guilhermerblc.personalfinanceapi.repository.AccountRepository;
 import com.github.guilhermerblc.personalfinanceapi.repository.UserRepository;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,4 +59,27 @@ public class AccountService {
                 .toList();
     }
 
+    @Transactional
+    public boolean deleteAccount(Long accountId) {
+        accountRepository.deleteById(accountId);
+        return true;
+    }
+
+    @Transactional
+    public AccountResponseDTO updateAccount(Long accountId, @Valid AccountRequestDTO requestDTO) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        account.setName(requestDTO.getName());
+        account.setBalance(requestDTO.getBalance());
+
+        Account savedAccount = accountRepository.save(account);
+
+        return AccountResponseDTO.builder()
+                .id(savedAccount.getId())
+                .name(savedAccount.getName())
+                .balance(savedAccount.getBalance())
+                .userId(savedAccount.getUser().getId())
+                .build();
+    }
 }

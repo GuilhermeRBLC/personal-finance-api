@@ -32,4 +32,16 @@ public class TransactionController {
         return ResponseEntity.ok(transactions);
     }
 
+    @PutMapping("/{transactionId}")
+    public ResponseEntity<TransactionResponseDTO> update(@PathVariable Long transactionId, @Valid @RequestBody TransactionRequestDTO requestDTO) {
+        TransactionResponseDTO responseDTO = transactionService.updateTransaction(transactionId, requestDTO);
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    @DeleteMapping("/{transactionId}")
+    public ResponseEntity<Boolean> delete(@PathVariable Long transactionId) {
+        transactionService.deleteTransaction(transactionId);
+        return ResponseEntity.noContent().build();
+    }
+
 }
