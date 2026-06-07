@@ -13,6 +13,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     List<Account> findByUserId(Integer userId);
 
-    @Query("SELECT a FROM Account a WHERE a.user.id = :userId ORDER BY a.date DESC")
+    @Query("SELECT a FROM Account a WHERE a.user.id = :userId")
     List<Account> findAllByUserId(Long userId);
 }

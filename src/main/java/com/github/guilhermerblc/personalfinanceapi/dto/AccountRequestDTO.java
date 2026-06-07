@@ -3,6 +3,7 @@ package com.github.guilhermerblc.personalfinanceapi.dto;
 import com.github.guilhermerblc.personalfinanceapi.domain.User;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +23,7 @@ public class AccountRequestDTO {
     private String name;
 
     @NotNull(message = "Balance is required")
-    @Positive(message = "Balance must be greater than zero")
+    @PositiveOrZero(message = "Balance must be greater than zero")
     private BigDecimal balance;
 
     @NotNull(message = "User ID is required")

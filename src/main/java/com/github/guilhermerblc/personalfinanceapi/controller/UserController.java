@@ -1,5 +1,6 @@
 package com.github.guilhermerblc.personalfinanceapi.controller;
 
+import com.github.guilhermerblc.personalfinanceapi.dto.LoginRequestDTO;
 import com.github.guilhermerblc.personalfinanceapi.dto.UserRequestDTO;
 import com.github.guilhermerblc.personalfinanceapi.dto.UserResponseDTO;
 import com.github.guilhermerblc.personalfinanceapi.service.UserService;
@@ -19,6 +20,13 @@ public class UserController {
 
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<UserResponseDTO> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
+        UserResponseDTO responseDTO = userService.authUser(loginRequestDTO);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 
     @PostMapping
