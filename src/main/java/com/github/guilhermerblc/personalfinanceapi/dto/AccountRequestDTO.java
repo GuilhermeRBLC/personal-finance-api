@@ -25,7 +25,4 @@ public class AccountRequestDTO {
     @NotNull(message = "Balance is required")
     @PositiveOrZero(message = "Balance must be greater than zero")
     private BigDecimal balance;
-
-    @NotNull(message = "User ID is required")
-    private Long userId;
 }

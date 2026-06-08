@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class TransactionService {
@@ -26,10 +27,14 @@ public class TransactionService {
     }
 
     @Transactional
-    public TransactionResponseDTO createTransaction(TransactionRequestDTO requestDTO) {
+    public TransactionResponseDTO createTransaction(Long userId, TransactionRequestDTO requestDTO) {
 
         Account account = accountRepository.findById(requestDTO.getAccountId())
                 .orElseThrow(() -> new RuntimeException("Account not found with id: " + requestDTO.getAccountId()));
+
+        if(account.getUser().getId() != userId) {
+            throw new RuntimeException("Account not found with id: " + requestDTO.getAccountId());
+        }
 
         Transaction transaction = Transaction.builder()
                 .description(requestDTO.getDescription())
@@ -77,17 +82,29 @@ public class TransactionService {
     }
 
     @Transactional
-    public boolean deleteTransaction(Long id) {
+    public boolean deleteTransaction(Long userId, Long id) {
+
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Transaction not found with id: " + id));
+
+        if(!transaction.getAccount().getUser().getId().equals(userId)) {
+            throw new RuntimeException("User not found");
+        }
+
         transactionRepository.deleteById(id);
         return true;
     }
 
-    public TransactionResponseDTO updateTransaction(Long transactionId, TransactionRequestDTO requestDTO) {
+    public TransactionResponseDTO updateTransaction(Long userId, Long transactionId, TransactionRequestDTO requestDTO) {
         Transaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new RuntimeException("Transaction not found with id: " + transactionId));
 
         Account account = accountRepository.findById(requestDTO.getAccountId())
                 .orElseThrow(() -> new RuntimeException("Account not found with id: " + requestDTO.getAccountId()));
+
+        if(account.getUser().getId() != userId) {
+            throw new RuntimeException("Account not found with id: " + requestDTO.getAccountId());
+        }
 
         transaction.setDescription(requestDTO.getDescription());
         transaction.setAmount(requestDTO.getAmount());

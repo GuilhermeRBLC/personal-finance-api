@@ -18,5 +18,4 @@ public class AccountResponseDTO {
     private Long id;
     private String name;
     private BigDecimal balance;
-    private Long userId;
 }

@@ -1,9 +1,11 @@
 package com.github.guilhermerblc.personalfinanceapi.controller;
 
+import com.github.guilhermerblc.personalfinanceapi.domain.User;
 import com.github.guilhermerblc.personalfinanceapi.dto.DashboardResponseDTO;
 import com.github.guilhermerblc.personalfinanceapi.service.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,9 +21,9 @@ public class DashboardController {
         this.dashboardService = dashboardService;
     }
 
-    @GetMapping("/summary/{userId}")
-    public ResponseEntity<DashboardResponseDTO> summary(@PathVariable Long userId) {
-        DashboardResponseDTO dashboardResponseDTO = dashboardService.summary(userId);
+    @GetMapping("/summary")
+    public ResponseEntity<DashboardResponseDTO> summary(@AuthenticationPrincipal User logUser) {
+        DashboardResponseDTO dashboardResponseDTO = dashboardService.summary(logUser.getId());
         return ResponseEntity.ok(dashboardResponseDTO);
     }
 }

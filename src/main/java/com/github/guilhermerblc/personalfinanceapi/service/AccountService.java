@@ -24,9 +24,9 @@ public class AccountService {
     }
 
     @Transactional
-    public AccountResponseDTO createAccount(AccountRequestDTO accountRequestDTO) {
+    public AccountResponseDTO createAccount(Long userId, AccountRequestDTO accountRequestDTO) {
 
-        User user = userRepository.findById(accountRequestDTO.getUserId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Account account = Account.builder()
@@ -41,7 +41,6 @@ public class AccountService {
                 .id(savedAccount.getId())
                 .name(savedAccount.getName())
                 .balance(savedAccount.getBalance())
-                .userId(savedAccount.getUser().getId())
                 .build();
 
     }
@@ -54,21 +53,32 @@ public class AccountService {
                         .id(account.getId())
                         .name(account.getName())
                         .balance(account.getBalance())
-                        .userId(account.getUser().getId())
                         .build())
                 .toList();
     }
 
     @Transactional
-    public boolean deleteAccount(Long accountId) {
+    public boolean deleteAccount(Long userId, Long accountId) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        if(!account.getUser().getId().equals(userId)) {
+            throw new RuntimeException("User not found");
+        }
+
         accountRepository.deleteById(accountId);
         return true;
     }
 
     @Transactional
-    public AccountResponseDTO updateAccount(Long accountId, @Valid AccountRequestDTO requestDTO) {
+    public AccountResponseDTO updateAccount(Long userId, Long accountId, @Valid AccountRequestDTO requestDTO) {
+
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        if(!account.getUser().getId().equals(userId)) {
+            throw new RuntimeException("User not found");
+        }
 
         account.setName(requestDTO.getName());
         account.setBalance(requestDTO.getBalance());
@@ -79,7 +89,6 @@ public class AccountService {
                 .id(savedAccount.getId())
                 .name(savedAccount.getName())
                 .balance(savedAccount.getBalance())
-                .userId(savedAccount.getUser().getId())
                 .build();
     }
 }
