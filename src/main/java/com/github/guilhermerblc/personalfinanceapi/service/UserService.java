@@ -2,10 +2,16 @@ package com.github.guilhermerblc.personalfinanceapi.service;
 
 import com.github.guilhermerblc.personalfinanceapi.domain.User;
 import com.github.guilhermerblc.personalfinanceapi.dto.LoginRequestDTO;
+import com.github.guilhermerblc.personalfinanceapi.dto.LoginResponseDTO;
 import com.github.guilhermerblc.personalfinanceapi.dto.UserRequestDTO;
 import com.github.guilhermerblc.personalfinanceapi.dto.UserResponseDTO;
+import com.github.guilhermerblc.personalfinanceapi.infra.security.TokenService;
 import com.github.guilhermerblc.personalfinanceapi.repository.UserRepository;
 import jakarta.validation.Valid;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,9 +19,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager; // <-- INJETAR AQUI
+    private final TokenService tokenService;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            AuthenticationManager authenticationManager,
+            TokenService tokenService) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.tokenService = tokenService;
     }
 
     @Transactional
@@ -28,7 +44,7 @@ public class UserService {
         User user = User.builder()
                 .name(requestDTO.getName())
                 .email(requestDTO.getEmail())
-                .password(requestDTO.getPassword())
+                .password(passwordEncoder.encode(requestDTO.getPassword()))
                 .build();
 
         User savedUser = userRepository.save(user);
@@ -53,18 +69,17 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserResponseDTO authUser(@Valid LoginRequestDTO loginRequestDTO) {
-        User user = userRepository.findByEmail(loginRequestDTO.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found with email: " + loginRequestDTO.getEmail()));
+    public LoginResponseDTO authUser(@Valid LoginRequestDTO loginRequestDTO) {
+        var usernamePassword = new UsernamePasswordAuthenticationToken(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
 
-        if(!loginRequestDTO.getPassword().equals(user.getPassword())) {
-            throw new RuntimeException("Wrong password!");
-        }
+        var authentication = authenticationManager.authenticate(usernamePassword);
 
-        return UserResponseDTO.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .email(user.getEmail())
+        var user = (User) authentication.getPrincipal();
+
+        String token = tokenService.generateToken(user);
+
+        return LoginResponseDTO.builder()
+                .token(token)
                 .build();
     }
 }
