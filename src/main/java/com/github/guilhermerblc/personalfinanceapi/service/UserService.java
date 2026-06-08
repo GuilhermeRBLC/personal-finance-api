@@ -79,6 +79,7 @@ public class UserService {
         String token = tokenService.generateToken(user);
 
         return LoginResponseDTO.builder()
+                .userName(user.getName())
                 .token(token)
                 .build();
     }
