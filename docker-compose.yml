@@ -34,7 +34,7 @@ services:
 
   frontend-angular:
     build:
-      context: ../personal-finance-frontend # frontend
+      context: ../personal-finance-web # frontend
       dockerfile: Dockerfile
     container_name: finance-frontend
     ports:
