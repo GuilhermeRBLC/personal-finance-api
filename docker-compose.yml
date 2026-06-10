@@ -27,6 +27,7 @@ services:
       DB_USER: postgres
       DB_PASSWORD: root
       JWT_SECRET: chave-super-secreta-para-o-docker
+      ALLOWED_ORIGINS: http://localhost
     depends_on:
       - postgres-db
     networks:
