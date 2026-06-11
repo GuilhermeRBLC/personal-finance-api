@@ -60,6 +60,23 @@ The application relies on the following environment variables for configuration 
 * Docker and Docker Compose installed.
 
 ### Execution Steps
+
+Clone the projects, keeping them in the following structure. The docker-compose.yml file will look for the personal-finance-web folder one level above the backend folder.
+
+```sh
+mkdir personal-finance-app
+cd personal-finance-app
+git clone https://github.com/GuilhermeRBLC/personal-finance-api.git
+git clone https://github.com/GuilhermeRBLC/personal-finance-web.git
+```
+
+```bash
+📁 personal-finance-app/              # Root Directory
+├── 📁 personal-finance-api/          # ☕ BACKEND (Spring Boot API)
+│    └── 📄 docker-compose.yml        # 🐳 Ecosystem Orchestrator (Database + Back + Front)
+└── 📁 personal-finance-web/          # 🅰️ FRONTEND (Angular Web App)
+```
+
 To spin up the database and the backend API together, navigate to the project root directory where the `docker-compose.yml` is located and run:
 
 ```bash
@@ -67,6 +84,14 @@ docker-compose up -d --build
 ```
 
 The server will initialize, Flyway will apply migrations automatically, and the API will be available at http://localhost:8080.
+
+The frontend container will build, compile the Angular application, and expose the interface at http://localhost (or http://localhost:4200 depending on your compose configuration) 🚀.
+
+To stop everything.
+
+```bash
+docker-compose down
+```
 
 ## 📖 API Documentation (Swagger)
 Once the application is running, you can explore and test the endpoints interactively via Swagger UI:
