@@ -12,8 +12,8 @@ The backend is fully containerized with Docker, working seamlessly alongside the
     <td align="center"><strong>Backend Swagger UI</strong></td>
   </tr>
   <tr>
-    <td><img src="./assets/dashboard.png" width="500px" alt="Dashboard Preview"/></td>
-    <td><img src="./assets/swagger.png" width="500px" alt="Swagger Preview"/></td>
+    <td><img src="./assets/dashboard.jpeg" width="500px" alt="Dashboard Preview"/></td>
+    <td><img src="./assets/swagger.jpeg" width="500px" alt="Swagger Preview"/></td>
   </tr>
 </table>
 
