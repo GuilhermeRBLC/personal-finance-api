@@ -19,3 +19,12 @@ The project is fully dockerized and ready to run alongside the frontend.
 * **Security Context:** Logged-in user identification retrieved directly from the Spring Security context (`@AuthenticationPrincipal`), avoiding the exposure of sensitive IDs in transaction URLs.
 * **Automated Migrations:** Flyway automatically manages the creation and evolution of tables (`tb_users`, `tb_accounts`, `tb_transactions`).
 
+## 🧪 Running Tests
+
+To run the unit tests locally via Maven, execute the following command in the backend root directory:
+
+```bash
+mvn test
+```
+
+We use JUnit 5 and Mockito to ensure service layer isolation and test business rules against unexpected behavior.
