@@ -85,9 +85,8 @@ What is covered:
 
 To run the unit tests locally via Maven, execute:
 
----
-
 ```bash
 mvn test
 ```
 
+---
