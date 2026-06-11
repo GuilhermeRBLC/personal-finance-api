@@ -68,22 +68,24 @@ docker-compose up -d --build
 
 The server will initialize, Flyway will apply migrations automatically, and the API will be available at http://localhost:8080.
 
-📖 API Documentation (Swagger)
+## 📖 API Documentation (Swagger)
 Once the application is running, you can explore and test the endpoints interactively via Swagger UI:
 
 🔗 http://localhost:8080/swagger-ui/index.html
 
-🧪 Testing Suite
+## 🧪 Testing Suite
 We maintain a high-quality test suite using JUnit 5, Mockito, and AssertJ focused on sealing business logic rules against unexpected behaviors.
 
 What is covered:
-UserService: Validates secure password hashing, unique email enforcement, and end-to-end JWT generation/validation.
+- UserService: Validates secure password hashing, unique email enforcement, and end-to-end JWT generation/validation.
 
-AccountService & TransactionService: Guarantees core multi-tenant security blocks (preventing unauthorized cross-user modifications) and precise balance updates using BigDecimal.
+- AccountService & TransactionService: Guarantees core multi-tenant security blocks (preventing unauthorized cross-user modifications) and precise balance updates using BigDecimal.
 
-DashboardService: Assures smooth, null-safe conversions when building metrics for users without a financial history.
+- DashboardService: Assures smooth, null-safe conversions when building metrics for users without a financial history.
 
 To run the unit tests locally via Maven, execute:
+
+---
 
 ```bash
 mvn test
